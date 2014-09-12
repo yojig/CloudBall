@@ -11,7 +11,7 @@ namespace CloudBall
         [STAThread]
         static void Main(string[] args)
         {
-            using (var game = new Client.Client(new TeamYojig.First(), new TeamIce.TeamIce()))
+            using (var game = new Client.Client(new TeamYojig.First(), new TeamRNA.TestSquad()))
             {
                 game.Run();
             }

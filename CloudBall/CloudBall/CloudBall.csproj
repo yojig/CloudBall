@@ -129,6 +129,10 @@
       <Project>{45383A68-55E1-4051-B460-459940327D96}</Project>
       <Name>TeamOne</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\TeamRNA\TeamRNA.csproj">
+      <Project>{6e38e6a9-c148-4063-90bc-3e2f0036e4ff}</Project>
+      <Name>TeamRNA</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\TeamTwo\TeamTwo.csproj">
       <Project>{B9F1798B-725A-41A3-8C95-B1918D8A614F}</Project>
       <Name>TeamTwo</Name>

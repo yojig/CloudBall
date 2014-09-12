@@ -1,12 +1,24 @@
-﻿using Common;
+﻿using System;
+using System.Linq;
+using Common;
 
 namespace TeamRNA
 {
-    public class Squad : ITeam
+    public class TestSquad : ITeam
     {
         public void Action(Team myTeam, Team enemyTeam, Ball ball, MatchInfo matchInfo)
         {
-            return;
+            var pitch = new Pitch(myTeam, enemyTeam, ball, matchInfo);
+
+            var height = (int)Field.MyGoal.Height;
+            var step = height/(myTeam.Players.Count + 1);
+
+            var roles = Enumerable.Range(1, myTeam.Players.Count)
+                .Select(p => new GateStanderRole(new Vector(0, Field.MyGoal.Y + p*step)))
+                .Zip(myTeam.Players, Tuple.Create);
+
+            foreach (var role in roles)
+                role.Item1.DoAction(role.Item2, pitch);
         }
     }
 }
