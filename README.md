@@ -2,12 +2,12 @@ CloudBall
 =========
 
 Pending tasks:
-# add logic for attack/defence flag SS
-# add role selector for squad SS
-# add defensive roles
-## goalkeeper MS
-## defender against ball carrier DK
-## defender against other players VP
+- add logic for attack/defence flag SS
+- add role selector for squad SS
+- add defensive roles
+-- goalkeeper MS
+-- defender against ball carrier DK
+-- defender against other players VP
 
 
 
