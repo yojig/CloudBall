@@ -14,7 +14,7 @@ Pending tasks:
 
 Notes below
 ===========
-Remember of tackle timer
-Remember of fallen timer
-Remember of inertion
-Check if ball could be held infinitively
+- Remember of tackle timer
+- Remember of fallen timer
+- Remember of inertion
+- Check if ball could be held infinitively
