@@ -1,0 +1,808 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Common</name>
+    </assembly>
+    <members>
+        <member name="F:GameCommon.FileHandler.numMetaDataLines">
+            <summary>
+            This class is used to handle the replay files
+            It has been written to minimize the replay files size.
+            
+            Files are initially compressed by saving data as two ascii characters per integer value. 
+            The integer has to be in the range 0-2703, however all values we work with (as of 2011-12-29) are in that range.
+            
+            The text file is then compressed using .gz compression.
+            
+            The resulting file is about 36 bytes per frame.
+            
+            Data is saved in the following uncompressed format.
+            
+            XXYYXXYYXXYYXXYYXXYYXXYYXXYYXXYYXXYYXXYYXXYYXXYYXXYYAABB
+            
+            Where the first 12 sets of XXYY is the X and Y coordinates of the players. 
+            The 13th set is the X and Y coordinate of the ball. 
+            The last four characters is the score of team 1 and team 2.
+            
+            Author: Jonas Adler and Oscar Holmér, 2011-12-28
+            </summary>
+        </member>
+        <member name="T:Common.Field">
+            <summary>
+            Field contains information on the size of the game field, and where the goals are.
+            </summary>
+        </member>
+        <member name="F:Common.Field.Borders">
+            <summary>
+            A rectangle which's borders is the borders of the playing field
+            </summary>
+        </member>
+        <member name="F:Common.Field.EnemyGoal">
+            <summary>
+            A rectangle with width 0 that is situated at the enemy goal.
+            </summary>
+        </member>
+        <member name="F:Common.Field.MyGoal">
+            <summary>
+            A rectangle with width 0 that is situated at the your goal.
+            </summary>
+        </member>
+        <member name="T:GameCommon.Score">
+            <summary>Score is a wrapper class for the score during a game.</summary>
+        </member>
+        <member name="T:Common.Rectangle">
+            <summary>
+            A rectangle can be used to specify a specific area, such as the whole field, a goal, or your half of the plane.
+            </summary>
+        </member>
+        <member name="T:Common.IPosition">
+            <summary>
+            A interface used by ball, player, vector and rectangle. Guarantess that the object has a position.
+            </summary>
+        </member>
+        <member name="M:Common.IPosition.GetClosest(Common.Team)">
+            <summary>
+            Check for the closest player in a team.
+            </summary>
+            <param name="team">Your team, or enemy team.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Common.IPosition.GetDistanceTo(Common.IPosition)">
+            <summary>
+            Get distance from this object to another object.
+            </summary>
+            <param name="obj"></param>
+            <returns></returns>
+        </member>
+        <member name="P:Common.IPosition.Position">
+            <summary>
+            Get the position of the object.
+            </summary>
+        </member>
+        <member name="F:Common.Rectangle.Height">
+            <summary>
+            The height of the rectangle.
+            </summary>
+        </member>
+        <member name="F:Common.Rectangle.Width">
+            <summary>
+            The width of the rectangle.
+            </summary>
+        </member>
+        <member name="F:Common.Rectangle.X">
+            <summary>
+            X coordinate of the upper left corner of the rectangle.
+            </summary>
+        </member>
+        <member name="F:Common.Rectangle.Y">
+            <summary>
+            Y coordinate of the upper left corner of the rectangle.
+            </summary>
+        </member>
+        <member name="M:Common.Rectangle.#ctor(System.Single,System.Single,System.Single,System.Single)">
+            <summary>
+            Creates a new rectangle.
+            </summary>
+            <param name="x">X coordinate of the upper left corner of the rectangle.</param>
+            <param name="y">Y coordinate of the upper left corner of the rectangle.</param>
+            <param name="width">Width of the rectangle.</param>
+            <param name="height">Height of the rectangle.</param>
+        </member>
+        <member name="M:Common.Rectangle.op_Inequality(Common.Rectangle,Common.Rectangle)">
+            <summary>
+            Tests two rectangles for inequality.
+            </summary>
+            <param name="a"></param>
+            <param name="b"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Common.Rectangle.op_Equality(Common.Rectangle,Common.Rectangle)">
+            <summary>
+            Tests two rectangles for equality.
+            </summary>
+            <param name="a"></param>
+            <param name="b"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Common.Rectangle.Contains(Common.Vector)">
+            <summary>
+            Checks of this rectangle contains a vector.
+            </summary>
+            <param name="vector"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Common.Rectangle.Contains(Common.Rectangle)">
+            <summary>
+            Checks if this rectangle contains another rectangle.
+            </summary>
+            <param name="rectangle"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Common.Rectangle.Contains(System.Single,System.Single)">
+            <summary>
+            Checks if this rectangle cointains a point.
+            </summary>
+            <param name="x">X coordinate of point.</param>
+            <param name="y">Y coordinate of point.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Common.Rectangle.Equals(Common.Rectangle)">
+            <summary>
+            Checks if this rectangle is equal to another rectangle.
+            </summary>
+            <param name="other"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Common.Rectangle.Inflate(System.Single,System.Single)">
+            <summary>
+            Inflates the rectangle by a specified ammount.
+            </summary>
+            <param name="horizontalAmount"></param>
+            <param name="verticalAmount"></param>
+        </member>
+        <member name="M:Common.Rectangle.GetDistanceTo(Common.IPosition)">
+            <summary>Gets the shortest distance from the rectangle to object.</summary>
+        </member>
+        <member name="M:Common.Rectangle.GetClosest(Common.Team)">
+            <summary>
+            Gets the closest player in a team.
+            </summary>
+            <param name="team">Team to check, either your or the enemy team.</param>
+            <returns></returns>
+        </member>
+        <member name="P:Common.Rectangle.Top">
+            <summary>
+            Gets the position of the top center of the rectangle.
+            </summary>
+        </member>
+        <member name="P:Common.Rectangle.Bottom">
+            <summary>
+            Gets the postion of the bottom center of the rectangle.
+            </summary>
+        </member>
+        <member name="P:Common.Rectangle.Left">
+            <summary>
+            Gets the position of the left center of the rectangle.
+            </summary>
+        </member>
+        <member name="P:Common.Rectangle.Right">
+            <summary>
+            Gets the position of the right center of the rectangle.
+            </summary>
+        </member>
+        <member name="P:Common.Rectangle.Center">
+            <summary>
+            Gets the position of the center of the rectangle.
+            </summary>
+        </member>
+        <member name="P:Common.Rectangle.Position">
+            <summary>
+            Returns the center of this rectangle.
+            </summary>
+        </member>
+        <member name="T:Common.ITeam">
+            <summary>
+            All teams have to inherit from ITeam.
+            </summary>
+        </member>
+        <member name="M:Common.ITeam.Action(Common.Team,Common.Team,Common.Ball,Common.MatchInfo)">
+            <summary>
+            The game engine will call the Action method on your team to get the actions that your team wants to preform every round. 
+            </summary>
+            <param name="myTeam">Your team</param>
+            <param name="enemyTeam">The enemy team</param>
+            <param name="ball">The ball</param>
+            <param name="matchInfo">Information on the current gamestate</param>
+            <returns></returns>
+        </member>
+        <member name="T:Common.Vector">
+            <summary>
+            The vector class. Used to specify a position or direction. A vector is given by a pair of floats (X,Y).
+            </summary>
+        </member>
+        <member name="F:Common.Vector.X">
+            <summary>
+            X value of vector.
+            </summary>
+        </member>
+        <member name="F:Common.Vector.Y">
+            <summary>
+            Y value of vector.
+            </summary>
+        </member>
+        <member name="M:Common.Vector.#ctor(System.Single,System.Single)">
+            <summary>Returns vector with specified coordinates.</summary>
+            <param name="x">X coordinate of new vector.</param>
+            <param name="y">Y coordinate of new vector.</param>
+        </member>
+        <member name="M:Common.Vector.#ctor(System.Double,System.Double)">
+            <summary>Returns vector with specified coordinates. If double input is given the input is converted to floats.</summary>
+            <param name="x">X coordinate of new vector.</param>
+            <param name="y">Y coordinate of new vector.</param>
+        </member>
+        <member name="M:Common.Vector.op_Addition(Common.Vector,Common.Vector)">
+            <summary>Returns vector that is the pointwise sum of the two vectors.</summary>
+        </member>
+        <member name="M:Common.Vector.op_UnaryNegation(Common.Vector)">
+            <summary>Returns the negative of the vector. (-this.X,-this.Y)</summary>
+        </member>
+        <member name="M:Common.Vector.op_Subtraction(Common.Vector,Common.Vector)">
+            <summary>
+            
+            </summary>
+            <param name="vector1"></param>
+            <param name="vector2"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Common.Vector.op_Multiply(System.Single,Common.Vector)">
+            <summary>
+            
+            </summary>
+            <param name="scaleFactor"></param>
+            <param name="vector2"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Common.Vector.op_Multiply(System.Double,Common.Vector)">
+            <summary>
+            
+            </summary>
+            <param name="scaleFactor"></param>
+            <param name="vector2"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Common.Vector.op_Multiply(Common.Vector,System.Single)">
+            <summary>
+            
+            </summary>
+            <param name="vector1"></param>
+            <param name="scaleFactor"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Common.Vector.op_Multiply(Common.Vector,System.Double)">
+            <summary>
+            
+            </summary>
+            <param name="vector1"></param>
+            <param name="scaleFactor"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Common.Vector.op_Multiply(Common.Vector,Common.Vector)">
+            <summary>
+            
+            </summary>
+            <param name="vector1"></param>
+            <param name="vector2"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Common.Vector.op_Division(Common.Vector,System.Single)">
+            <summary>
+            
+            </summary>
+            <param name="vector1"></param>
+            <param name="divider"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Common.Vector.op_Equality(Common.Vector,Common.Vector)">
+            <summary>
+            Checks two vectors for equality.
+            </summary>
+            <param name="vector1"></param>
+            <param name="vector2"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Common.Vector.op_Inequality(Common.Vector,Common.Vector)">
+            <summary>
+            Checks two vectors for inequality.
+            </summary>
+            <param name="vector1"></param>
+            <param name="vector2"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Common.Vector.Distance(Common.Vector,Common.Vector)">
+            <summary>
+            Returns the distance between two vectors.
+            </summary>
+            <param name="vector1"></param>
+            <param name="vector2"></param>
+            <returns>(vector1 - vector2).Length</returns>
+        </member>
+        <member name="M:Common.Vector.Distance(Common.IPosition,Common.IPosition)">
+            <summary>
+            Returns the distance between two positions.
+            </summary>
+            <param name="vector1"></param>
+            <param name="vector2"></param>
+            <returns>(vector1 - vector2).Length</returns>
+        </member>
+        <member name="M:Common.Vector.Dot(Common.Vector)">
+            <summary>
+            Returns the dot product of this vector and input vector.
+            </summary>
+            <param name="vector"></param>
+            <returns>this.X * vector.X + this.Y * vector.Y</returns>
+        </member>
+        <member name="M:Common.Vector.Dot(Common.Vector,Common.Vector)">
+            <summary>
+            
+            </summary>
+            <param name="vector1"></param>
+            <param name="vector2"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Common.Vector.Normalize">
+            <summary>
+            Normalizes the length of this vector to 1. If this is the zero vector, does nothing.
+            </summary>
+        </member>
+        <member name="M:Common.Vector.Rotate(System.Single)">
+            <summary>
+            Rotates the vector.
+            </summary>
+            <param name="theta">The rotation angle, in radians.</param>
+        </member>
+        <member name="M:Common.Vector.Unit">
+            <summary>
+            Returns a unit vector in the same direction as this vector.
+            </summary>
+            <returns>A unit vector</returns>
+        </member>
+        <member name="M:Common.Vector.Unit(Common.Vector)">
+            <summary>
+            Returns a unit vector in the same direction as input vector.
+            </summary>
+            <param name="value"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Common.Vector.GetDistanceTo(Common.IPosition)">
+            <summary>Gets the distance from ball.pos to a object</summary>
+        </member>
+        <member name="M:Common.Vector.GetClosest(Common.Team)">
+            <summary>
+            Gets the closest player in a team.
+            </summary>
+            <param name="team">Team to check, either your or the enemy team.</param>
+            <returns></returns>
+        </member>
+        <member name="P:Common.Vector.UnitX">
+            <summary>
+            Returns a unit vector in the X direction (1,0).
+            </summary>
+        </member>
+        <member name="P:Common.Vector.UnitY">
+            <summary>
+            Returns a unit vector in the Y direction (0,1).
+            </summary>
+        </member>
+        <member name="P:Common.Vector.Zero">
+            <summary>
+            Returns the zero vector (0,0).
+            </summary>
+        </member>
+        <member name="P:Common.Vector.Length">
+            <summary>
+            Gets the length of this vector, sqrt(X^2+Y^2)
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="P:Common.Vector.LengthSquared">
+            <summary>
+            Gets the squared length of this vector, X^2+Y^2.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="P:Common.Vector.Position">
+            <summary>
+            Returns this vector.
+            </summary>
+        </member>
+        <member name="T:Common.Player">
+            <summary>
+            The player object cointains all information about the players visible on the field. 
+            </summary>
+        </member>
+        <member name="M:Common.Player.#ctor(System.Int32,Common.Vector,Common.Vector,System.Int32,System.Int32,Common.Team,Common.PlayerType,GameCommon.GamePlayer)">
+            <summary>
+            Creates a new player. SHOULD NOT BE USED DURING NORMAL PROGRAMMING.
+            </summary>
+            <param name="id">Unique id of the player.</param>
+            <param name="pos">Vector specifying position.</param>
+            <param name="velocity">Vector specifying velocity.</param>
+            <param name="fallenTimer"></param>
+            <param name="tackleTimer"></param>
+            <param name="team"></param>
+            <param name="playerType"></param>
+            <param name="parent"></param>
+        </member>
+        <member name="M:Common.Player.ActionGo(Common.IPosition)">
+            <summary>
+            To which position you want you player to move to, with the default power (max)
+            </summary>
+            <param name="destination"></param>
+        </member>
+        <member name="M:Common.Player.ActionShoot(Common.IPosition)">
+            <summary>
+            Shoots towards the specific location with default power (max)
+            </summary>
+            <param name="shootDestination"></param>
+        </member>
+        <member name="M:Common.Player.ActionShoot(Common.IPosition,System.Single)">
+            <summary>
+            Shoots towards the specific location with specified power
+            </summary>
+            <param name="shootDestination"></param>
+            <param name="shootPower"></param>
+        </member>
+        <member name="M:Common.Player.ActionShootGoal">
+            <summary>
+            Shoots towards the enemy goal with default power (max)
+            </summary>
+        </member>
+        <member name="M:Common.Player.ActionShootGoal(System.Single)">
+            <summary>
+            Shoots towards the enemy goal with specified power
+            </summary>
+            <param name="shootPower"></param>
+        </member>
+        <member name="M:Common.Player.ActionTackle(Common.Player)">
+            <summary>
+            Tackles the player.
+            You don't always win!
+            </summary>
+            <param name="target">The specific player you want to tackle</param>
+        </member>
+        <member name="M:Common.Player.ActionPickUpBall">
+            <summary>
+            Picks upp the ball.
+            </summary>
+        </member>
+        <member name="M:Common.Player.ActionDropBall">
+            <summary>
+            Drops the ball if you have it
+            </summary>
+        </member>
+        <member name="M:Common.Player.ActionWait">
+            <summary>
+            The player waits for one round (does nothing).
+            </summary>
+        </member>
+        <member name="M:Common.Player.CanTackle(Common.Player)">
+            <summary>Checks if the player can tackle another player.</summary>
+        </member>
+        <member name="M:Common.Player.CanPickUpBall(Common.Ball)">
+            <summary>Checks if the player can pick up the ball.</summary>
+        </member>
+        <member name="M:Common.Player.GetClosest(Common.Team)">
+            <summary>Gets the closest player in the specified team.</summary>
+        </member>
+        <member name="M:Common.Player.Equals(System.Object)">
+            <summary>
+            Tests if this player is equal to a object.
+            </summary>
+            <param name="obj"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Common.Player.Equals(Common.Player)">
+            <summary>
+            Tests if this player is equal to another player.
+            </summary>
+            <param name="p"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Common.Player.op_Equality(Common.Player,Common.Player)">
+            <summary>
+            Tests two players for equality.
+            </summary>
+            <param name="a"></param>
+            <param name="b"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Common.Player.op_Inequality(Common.Player,Common.Player)">
+            <summary>
+            Tests two players for inequality.
+            </summary>
+            <param name="a"></param>
+            <param name="b"></param>
+            <returns></returns>
+        </member>
+        <member name="P:Common.Player.Position">
+            <summary>Gets the position of the player.</summary>
+        </member>
+        <member name="P:Common.Player.Velocity">
+            <summary>Gets the velocity of the player.</summary>
+        </member>
+        <member name="P:Common.Player.Team">
+            <summary>Gets the players team.</summary>
+        </member>
+        <member name="P:Common.Player.PlayerType">
+            <summary>Gets what type the player is.</summary>
+        </member>
+        <member name="P:Common.Player.FallenTimer">
+            <summary>Gets the players fallen timer. The number of rounds remaining untill the player can preform any action.</summary>
+        </member>
+        <member name="P:Common.Player.TackleTimer">
+            <summary>Gets the players tackle timer. How long before the player can tackle again.</summary>
+        </member>
+        <member name="T:Common.Team">
+            <summary>
+            The team class contains all the players in the team, and can also be tested for equality against another team.
+            </summary>
+        </member>
+        <member name="M:Common.Team.#ctor">
+            <summary>
+            Creates a new team. SHOULD NOT BE USED DURING NORMAL DEVELOPMENT.
+            </summary>
+        </member>
+        <member name="M:Common.Team.#ctor(System.Collections.Generic.List{Common.Player})">
+            <summary>
+            Creates a new team. SHOULD NOT BE USED DURING NORMAL DEVELOPMENT.
+            </summary>
+            <param name="players"></param>
+        </member>
+        <member name="M:Common.Team.#ctor(GameCommon.GameTeam,System.Boolean)">
+            <summary>
+            Creates a new team. SHOULD NOT BE USED DURING NORMAL DEVELOPMENT.
+            </summary>
+            <param name="team"></param>
+            <param name="withAction"></param>
+        </member>
+        <member name="M:Common.Team.Count">
+            <summary>Returns the number of players in the team.</summary>
+        </member>
+        <member name="M:Common.Team.AddDevShape(Common.Vector,System.Int32)">
+            <summary>
+            Adds a small square on the map, usefull for debugging.
+            </summary>
+            <param name="position">Position of the square. Must be inside the field.</param>
+            <param name="number">A number to display on the square. Must be in the range 0-9</param>
+        </member>
+        <member name="M:Common.Team.AddDevShape(Common.Vector)">
+            <summary>
+            Adds a small square on the map, usefull for debugging.
+            </summary>
+            <param name="position">Position of the square. Must be inside the field.</param>
+        </member>
+        <member name="M:Common.Team.Equals(System.Object)">
+            <summary>
+            Checks if this team is equal to a object.
+            </summary>
+            <param name="obj"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Common.Team.Equals(Common.Team)">
+            <summary>
+            Checks if this team is equal to another team.
+            </summary>
+            <param name="t"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Common.Team.op_Equality(Common.Team,Common.Team)">
+            <summary>
+            Checks two teams for equality.
+            </summary>
+            <param name="a"></param>
+            <param name="b"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Common.Team.op_Inequality(Common.Team,Common.Team)">
+            <summary>
+            Checks two teams for inequality.
+            </summary>
+            <param name="a"></param>
+            <param name="b"></param>
+            <returns></returns>
+        </member>
+        <member name="P:Common.Team.Players">
+            <summary>
+            Get the players in the team.
+            </summary>
+        </member>
+        <member name="P:Common.Team.DevMessage">
+            <summary>Allows the developer to display a message in the devPrompt.</summary>
+            <value>The message to be displayed</value>
+        </member>
+        <member name="T:Common.Ball">
+            <summary>
+            The ball object contains all information about the ball. Where it is, and where it is going.
+            </summary>
+        </member>
+        <member name="M:Common.Ball.#ctor(Common.Vector,Common.Vector,GameCommon.GamePlayer,System.Int32)">
+            <summary>
+            Creates a new ball object. Should be used carefully when programming a team.
+            </summary>
+            <param name="pos">Vector specifying the position of the new ball.</param>
+            <param name="velocity">Vector specifying velocity of the new ball.</param>
+            <param name="owner">Owner of the ball.</param>
+            <param name="pickUpTimer">Integer specifying the pickup timer of the new ball.</param>
+        </member>
+        <member name="M:Common.Ball.GetDistanceTo(Common.IPosition)">
+            <summary>Gets the distance from ball.pos to a object</summary>
+        </member>
+        <member name="M:Common.Ball.GetClosest(Common.Team)">
+            <summary>
+            Gets the closest player in a team.
+            </summary>
+            <param name="team">Team to check, either your or the enemy team.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Common.Ball.CanBePickedUpBy(Common.Player)">
+            <summary>Check if the ball can be picked up by a player.</summary>
+        </member>
+        <member name="P:Common.Ball.Position">
+            <summary>Gets the current position of the ball.</summary>
+        </member>
+        <member name="P:Common.Ball.Velocity">
+            <summary>Gets the current velocity of the ball.</summary>
+        </member>
+        <member name="P:Common.Ball.PickUpTimer">
+            <summary>Gets the balls pick up timer. How many rounds before it can be picked up again.</summary>
+        </member>
+        <member name="P:Common.Ball.Owner">
+            <summary>Gets the balls current owner. Returns null if it has no owner.</summary>
+        </member>
+        <member name="T:Common.MatchInfo">
+            <summary>
+            The matchinfo contains information about the current state of the game.
+            </summary>
+        </member>
+        <member name="M:Common.MatchInfo.#ctor(System.Int32,System.Int32,System.Int32,System.Boolean,System.Boolean)">
+            <summary>
+            Creates a new MatchInfo. SHOULD NOT BE USED DURING NORMAL PLAY.
+            </summary>
+            <param name="myScore"></param>
+            <param name="enemyScore"></param>
+            <param name="currentTimeStep"></param>
+            <param name="myTeamScored"></param>
+            <param name="enemyTeamScored"></param>
+        </member>
+        <member name="P:Common.MatchInfo.MyScore">
+            <summary>
+            Gets your teams score.
+            </summary>
+        </member>
+        <member name="P:Common.MatchInfo.EnemyScore">
+            <summary>
+            Gets the enemy teams score.
+            </summary>
+        </member>
+        <member name="P:Common.MatchInfo.CurrentTimeStep">
+            <summary>
+            Gets the current time step.
+            </summary>
+        </member>
+        <member name="P:Common.MatchInfo.MyTeamScored">
+            <summary>
+            Is true if your team scored the last round.
+            </summary>
+        </member>
+        <member name="P:Common.MatchInfo.EnemyTeamScored">
+            <summary>
+            Is true if the enemy team scored last round.
+            </summary>
+        </member>
+        <member name="T:Common.Constants">
+            <summary>
+            Constants contains all the constants that you may need to develop your team. 
+            </summary>
+        </member>
+        <member name="F:Common.Constants.speedFactor">
+            <summary>
+            speedFactor is a internal parameter that regulates the speed of the simulation. Increasing this makes the simulation faster, but reduces numerical precision.
+            </summary>
+        </member>
+        <member name="F:Common.Constants.BallMaxPickUpDistance">
+            <summary>Maximum distance (in units) a player can be from the ball to pick it up.</summary>
+        </member>
+        <member name="F:Common.Constants.BallTackleTimer">
+            <summary>Number of rounds from when the ball lost due to a tackle before it can be picked up by any player.</summary>
+        </member>
+        <member name="F:Common.Constants.BallShootTimer">
+            <summary>Number of rounds from when the ball is shot until it can be picked up by any player.</summary>
+        </member>
+        <member name="F:Common.Constants.BallMaxVelocity">
+            <summary>Maximum velocity of the ball (in units/round).</summary>
+        </member>
+        <member name="F:Common.Constants.BallHalfTime">
+            <summary>Time taken for ball to halve its velocity (in rounds).</summary>
+        </member>
+        <member name="F:Common.Constants.BallMaxStrStd">
+            <summary>Standard deviation (in radians) of a shot at max strength.</summary>
+        </member>
+        <member name="F:Common.Constants.BallPickUpImmunityTimer">
+            <summary>Number of rounds after picking up the ball that a player is immune to tackling.</summary>
+        </member>
+        <member name="F:Common.Constants.PlayerMaxVelocity">
+            <summary>Maximum velocity of a player (in units/round).</summary>
+        </member>
+        <member name="F:Common.Constants.PlayerVelocityHalfTime">
+            <summary>Time taken for a player to halve its velocity (in rounds) if it does not accelerate.</summary>
+        </member>
+        <member name="F:Common.Constants.PlayerMaxTackleDistance">
+            <summary>Maximum distance (in units) a player can tackle at.</summary>
+        </member>
+        <member name="F:Common.Constants.PlayerFallenTime">
+            <summary>Time (in rounds) a player is unable to preform any action after he has been tackled.</summary>
+        </member>
+        <member name="F:Common.Constants.PlayerTackleCooldown">
+            <summary>Time after a player has preformed a tackle before he can do it again.</summary>
+        </member>
+        <member name="F:Common.Constants.PlayerTackleChance">
+            <summary>Chance that a tackle will succeed.</summary>
+        </member>
+        <member name="F:Common.Constants.PlayerMaxShootStr">
+            <summary>The maximum strength the ball can be shot using. A ball shot at max strength will have max velocity.</summary>
+        </member>
+        <member name="F:Common.Constants.BallSlowDownFactor">
+            <summary>Advanced. Each round; Ball.Velocity *= BallSlowDownFactor.</summary>
+        </member>
+        <member name="F:Common.Constants.PlayerSlowDownFactor">
+            <summary>Advanced. Each round; Player.Velocity *= PlayerSlowDownFactor.</summary>
+        </member>
+        <member name="F:Common.Constants.PlayerAccelerationFactor">
+            <summary>Advanced. Each round; Player.Velocity += Player.direction * movePower * Constants.PlayerAccelerationFactor.</summary>
+        </member>
+        <member name="F:Common.Constants.GameEngineMaxThreadTime">
+            <summary>Advanced. The max thread time (milliseconds) your team is allowed each round. </summary>
+        </member>
+        <member name="F:Common.Constants.GameEngineMaxAllowedTimeouts">
+            <summary>Advanced. The maximum allowed ammount of timeouts. </summary>
+        </member>
+        <member name="F:Common.Constants.GameEngineMatchLength">
+            <summary>Number of rounds in a match.</summary>
+        </member>
+        <member name="T:Common.PlayerType">
+            <summary>
+            Every player has a type.
+            </summary>
+        </member>
+        <member name="F:Common.PlayerType.Keeper">
+            <summary>
+            The Keeper is the player with shirt number 1.
+            </summary>
+        </member>
+        <member name="F:Common.PlayerType.LeftDefender">
+            <summary>
+            The LeftDefender is the player with shirt number 2.
+            </summary>
+        </member>
+        <member name="F:Common.PlayerType.RightDefender">
+            <summary>
+            The RightDefender is the player with shirt number 3.
+            </summary>
+        </member>
+        <member name="F:Common.PlayerType.LeftForward">
+            <summary>
+            The LeftForward is the player with shirt number 4.
+            </summary>
+        </member>
+        <member name="F:Common.PlayerType.CenterForward">
+            <summary>
+            The CenterForward is the player with shirt number 5.
+            </summary>
+        </member>
+        <member name="F:Common.PlayerType.RightForward">
+            <summary>
+            The RightForward is the player with shirt number 6.
+            </summary>
+        </member>
+    </members>
+</doc>
