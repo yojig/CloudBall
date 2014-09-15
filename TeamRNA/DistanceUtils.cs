@@ -26,5 +26,11 @@ namespace TeamRNA
             var scaledVelocity = ball.Velocity * ball.Velocity.Length * 1.2;
             return ball.Position + scaledVelocity;
         }
+
+        public static IPosition GetFuturePosition(this Player player)
+        {
+            var scaledVelocity = player.Velocity * player.Velocity.Length * 1.2;
+            return player.Position + scaledVelocity;
+        }
     }
 }

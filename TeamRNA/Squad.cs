@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using Common;
+using TeamRNA.DefensiveRoles;
 using TeamRNA.SpecialRoles;
 
 namespace TeamRNA
@@ -69,6 +70,8 @@ namespace TeamRNA
                     freePlayers.Remove(newKeeper);
                 }
             }
+
+            freePlayers.ForEach(pl => new Berserker().DoAction(pl, pitch));
         }
 
         private static void AssignDefenceRoles(Pitch pitch)
@@ -90,6 +93,20 @@ namespace TeamRNA
             {
                 new Stopper().DoAction(closestToBall, pitch);
                 freePlayers.Remove(closestToBall);
+            }
+
+            var playersToMark = pitch.Enemy.Players
+                                     .Where(pl => pitch.Ball.Owner != pl)
+                                     .Where(pl => pl.Position.X < Field.Borders.Width*0.65);
+
+            foreach (var enemy in playersToMark)
+            {
+                if (!freePlayers.Any())
+                    break;
+
+                var defender = freePlayers.First();
+                new Defender(enemy).DoAction(defender, pitch);
+                freePlayers.Remove(defender);
             }
 
             //zip free with enemies, disregards enemy half players

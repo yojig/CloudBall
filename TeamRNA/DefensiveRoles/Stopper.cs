@@ -1,6 +1,6 @@
 ﻿using Common;
 
-namespace TeamRNA.SpecialRoles
+namespace TeamRNA.DefensiveRoles
 {
     public class Stopper : IRole
     {
