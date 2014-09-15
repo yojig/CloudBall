@@ -1,24 +1,27 @@
-﻿using System;
-using System.Linq;
-using Common;
+﻿using Common;
 
 namespace TeamRNA
 {
-    public class TestSquad : ITeam
+    public class Squad : ITeam
     {
+        private bool inAttack;
+
         public void Action(Team myTeam, Team enemyTeam, Ball ball, MatchInfo matchInfo)
         {
             var pitch = new Pitch(myTeam, enemyTeam, ball, matchInfo);
 
-            var height = (int)Field.MyGoal.Height;
-            var step = height/(myTeam.Players.Count + 1);
-
-            var roles = Enumerable.Range(1, myTeam.Players.Count)
-                .Select(p => new GateStanderRole(new Vector(0, Field.MyGoal.Y + p*step)))
-                .Zip(myTeam.Players, Tuple.Create);
-
-            foreach (var role in roles)
-                role.Item1.DoAction(role.Item2, pitch);
+            if (!inAttack && ball.Owner != null && ball.Owner.Team == myTeam)
+            {
+                inAttack = true;
+            }
+            if (inAttack && ball.Owner != null && ball.Owner.Team == enemyTeam)
+            {
+                inAttack = false;
+            }
+            if (inAttack && ball.Owner == null)
+            {
+                //get closest to ball
+            }
         }
     }
 }
