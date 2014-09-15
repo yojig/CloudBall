@@ -44,12 +44,21 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="GateStanderRole.cs" />
+    <Compile Include="DistanceUtils.cs" />
+    <Compile Include="PlayerUtils.cs" />
+    <Compile Include="SpecialRoles\BallGrabber.cs" />
+    <Compile Include="SpecialRoles\DefensiveKeeper.cs" />
+    <Compile Include="SpecialRoles\Stopper.cs" />
+    <Compile Include="TestRoles\GateStander.cs" />
     <Compile Include="IRole.cs" />
     <Compile Include="Pitch.cs" />
     <Compile Include="Squad.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TestSquad.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="AttackingRoles\" />
+    <Folder Include="DefensiveRoles\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

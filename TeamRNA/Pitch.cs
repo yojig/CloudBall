@@ -1,4 +1,6 @@
-﻿using Common;
+﻿using System.Collections.Generic;
+using Common;
+using System.Linq;
 
 namespace TeamRNA
 {
@@ -16,5 +18,37 @@ namespace TeamRNA
             Ball = ball;
             Info = info;
         }
+
+        public Player ClosestToBall
+        {
+            get
+            {
+                var myClosest = My.Players
+                                  .OrderBy(pl => pl.GetEstimatedDistance(Ball))
+                                  .FirstOrDefault();
+                var enemyClosest = Enemy.Players
+                                  .OrderBy(pl => pl.GetEstimatedDistance(Ball))
+                                  .FirstOrDefault();
+
+                if (myClosest != null && enemyClosest != null)
+                {
+                    if (myClosest.GetEstimatedDistance(Ball)*1.2 < enemyClosest.GetEstimatedDistance(Ball))
+                        return myClosest;
+
+                    return enemyClosest;
+                }
+
+                if (myClosest != null)
+                    return myClosest;
+
+                if (enemyClosest != null)
+                    return enemyClosest;
+
+                return null;
+            }
+        }
+
+
+        
     }
 }

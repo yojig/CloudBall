@@ -1,12 +1,12 @@
 ﻿using Common;
 
-namespace TeamRNA
+namespace TeamRNA.TestRoles
 {
-    public class GateStanderRole : IRole
+    public class GateStander : IRole
     {
         private readonly IPosition position;
 
-        public GateStanderRole(IPosition position)
+        public GateStander(IPosition position)
         {
             this.position = position;
         }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using Common;
+using TeamRNA.TestRoles;
 
 namespace TeamRNA
 {
@@ -14,7 +15,7 @@ namespace TeamRNA
             var step = height/(myTeam.Players.Count + 1);
 
             var roles = Enumerable.Range(1, myTeam.Players.Count)
-                                  .Select(p => new GateStanderRole(new Vector(0, Field.MyGoal.Y + p*step)))
+                                  .Select(p => new GateStander(new Vector(0, Field.MyGoal.Y + p*step)))
                                   .Zip(myTeam.Players, Tuple.Create);
 
             foreach (var role in roles)
