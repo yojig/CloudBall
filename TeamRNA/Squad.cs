@@ -140,11 +140,11 @@ namespace TeamRNA
                                      .ToList();
 
             var nonMarkedPlayersToMark = playersToMark
-                .Where(enemy => assignedDefenders.All(def => def.Value.MarkTarget != enemy))
+                .Where(enemy => assignedDefenders.All(def => def.Value.MarkTarget != enemy.PlayerType))
                 .ToList();
 
             var defendersLostRole = assignedDefenders
-                .Where(def => playersToMark.All(enemy => enemy != def.Value.MarkTarget))
+                .Where(def => playersToMark.All(enemy => enemy.PlayerType != def.Value.MarkTarget))
                 .ToList();
 
             var freePlayers = Pitch.My.Players
@@ -152,7 +152,7 @@ namespace TeamRNA
                 .Concat(defendersLostRole.Select(def => def.Value.Self))
                 .ToList();
 
-            foreach (var enemy in nonMarkedPlayersToMark)
+            foreach (var enemy in nonMarkedPlayersToMark.OrderBy(pl => pl.GetDistanceTo(Field.MyGoal)))
             {
                 if (!freePlayers.Any())
                     break;

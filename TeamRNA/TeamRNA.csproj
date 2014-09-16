@@ -47,6 +47,7 @@
     <Compile Include="AttackingRoles\Berserker.cs" />
     <Compile Include="DefensiveRoles\Defender.cs" />
     <Compile Include="DistanceUtils.cs" />
+    <Compile Include="PassingTestSquad.cs" />
     <Compile Include="PlayerUtils.cs" />
     <Compile Include="SpecialRoles\BallGrabber.cs" />
     <Compile Include="DefensiveRoles\DefensiveKeeper.cs" />

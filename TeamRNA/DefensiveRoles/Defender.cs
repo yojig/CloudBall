@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using Common;
 using TeamRNA.SpecialRoles;
 
@@ -6,11 +7,11 @@ namespace TeamRNA.DefensiveRoles
 {
     public class Defender : BaseRole, IEquatable<Defender>
     {
-        public readonly Player MarkTarget;
+        public readonly PlayerType MarkTarget;
 
         public Defender(Player self, Player mark) : base(self)
         {
-            this.MarkTarget = mark;
+            this.MarkTarget = mark.PlayerType;
         }
 
         public override void DoAction()
@@ -25,7 +26,8 @@ namespace TeamRNA.DefensiveRoles
             //if target is moving, then set point farther using diff in speed vectors
             //if target is stale set point closer
 
-            Self.ActionGo(MarkTarget.GetFuturePosition());
+            var target = Pitch.Enemy.Players.First(pl => pl.PlayerType == MarkTarget);
+            Self.ActionGo(target.GetFuturePosition());
         }
 
         public bool Equals(Defender other)

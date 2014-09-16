@@ -12,7 +12,9 @@ namespace CloudBall
         static void Main(string[] args)
         {
             //using (var game = new Client.Client(new TeamRNA.Squad(), new TeamRNA.TestSquad()))
-            using (var game = new Client.Client(new TeamRNA.Squad(), new TeamYojig.First()))
+            //using (var game = new Client.Client(new TeamRNA.Squad(), new TeamYojig.First()))
+            //using (var game = new Client.Client(new TeamRNA.Squad(), new TeamIce.TeamIce()))
+            using (var game = new Client.Client(new TeamRNA.PassingTestSquad(), new TeamRNA.TestSquad()))
             {
                 game.Run();
             }

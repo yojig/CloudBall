@@ -12,7 +12,6 @@ namespace TeamRNA.SpecialRoles
         protected BaseRole(Player self)
         {
             Type = self.PlayerType;
-            
         }
     }
 }
