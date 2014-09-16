@@ -1,18 +1,43 @@
-﻿using Common;
+﻿using System;
+using Common;
+using TeamRNA.SpecialRoles;
 
 namespace TeamRNA.DefensiveRoles
 {
-    public class Stopper : IRole
+    public class Stopper : BaseRole, IEquatable<Stopper>
     {
-        public void DoAction(Player self, Pitch pitch)
+        public Stopper(Player self) : base(self)
         {
-            if (self.CanPickUpBall(pitch.Ball))
+        }
+
+        public override void DoAction()
+        {
+            if (Self.CanPickUpBall(Pitch.Ball))
             {
-                self.ActionPickUpBall();
+                Self.ActionPickUpBall();
                 return;
             }
-            
-            self.GoForBall(pitch.Ball);
+
+            Self.GoForBall();
+        }
+
+        public bool Equals(Stopper other)
+        {
+            return true;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+
+            return Equals((Stopper)obj);
+        }
+
+        public override int GetHashCode()
+        {
+            return 0;
         }
     }
 }

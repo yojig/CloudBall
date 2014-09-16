@@ -1,19 +1,39 @@
-﻿using Common;
+﻿using System;
+using Common;
+using TeamRNA.SpecialRoles;
 
 namespace TeamRNA.TestRoles
 {
-    public class GateStander : IRole
+    public class GateStander : BaseRole, IEquatable<GateStander>
     {
         private readonly IPosition position;
 
-        public GateStander(IPosition position)
+        public GateStander(Player self, IPosition position):base(self)
         {
             this.position = position;
         }
 
-        public void DoAction(Player self, Pitch pitch)
+        public override void DoAction()
         {
-            self.ActionGo(position);
+            Self.ActionGo(position);
+        }
+
+        public bool Equals(GateStander other)
+        {
+            return true;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((GateStander) obj);
+        }
+
+        public override int GetHashCode()
+        {
+            return 0;
         }
     }
 }

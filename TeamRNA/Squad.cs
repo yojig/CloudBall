@@ -1,5 +1,8 @@
-﻿using System.Linq;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using Common;
+using TeamRNA.AttackingRoles;
 using TeamRNA.DefensiveRoles;
 using TeamRNA.SpecialRoles;
 
@@ -7,105 +10,155 @@ namespace TeamRNA
 {
     public class Squad : ITeam
     {
-        private bool inAttack;
+        private static bool inAttack;
+        private static readonly Dictionary<PlayerType, IRole> assignedRoles = new Dictionary<PlayerType, IRole>();
 
         public void Action(Team myTeam, Team enemyTeam, Ball ball, MatchInfo matchInfo)
         {
-            var pitch = new Pitch(myTeam, enemyTeam, ball, matchInfo);
+            Pitch.Assign(myTeam, enemyTeam, ball, matchInfo);
 
-            SetAttackState(pitch);
+            if (matchInfo.EnemyTeamScored || matchInfo.MyTeamScored)
+            {
+                Pitch.Log("==============================");
+                Pitch.Log("Someone scored, flushing roles");
+                Pitch.Log("==============================");
+                assignedRoles.Clear();
+            }
+
+            SetAttackState();
 
             if (inAttack)
-                AssignAttackRoles(pitch);
+                AssignAttackRoles();
             else
-                AssignDefenceRoles(pitch);
+                AssignDefenceRoles();
+
+
+            foreach (var assignedRole in assignedRoles)
+                assignedRole.Value.DoAction();
         }
 
-        private static void AssignAttackRoles(Pitch pitch)
+        private static void AssignAttackRoles()
         {
-            var freePlayers = pitch.My.Players.ToList();
-            var enemyClosest = pitch.Enemy.Players
-                                    .OrderBy(pl => pl.GetEstimatedDistance(pitch.Ball))
-                                    .FirstOrDefault();
-            var enemyClosestDistToBall = double.PositiveInfinity;
-
-            if (enemyClosest != null)
-                enemyClosestDistToBall = (enemyClosest.GetEstimatedDistance(pitch.Ball)/1.2);
-
-            var myOrdered = pitch.My.Players
-                                 .OrderBy(pl => pl.GetEstimatedDistance(pitch.Ball));
-
-            var myOrderedClosest = myOrdered
-                .Where(pl => pl.GetEstimatedDistance(pitch.Ball) < enemyClosestDistToBall)
-                .ToList();
-
-            //grab the ball
-            if (myOrderedClosest.Any(pl => pl.PlayerType != PlayerType.Keeper))
+            if (Pitch.Ball.Owner != null && Pitch.Ball.Owner.Team.Equals(Pitch.My))
             {
-                //closest is field player
-                var closestFieldPlayer = myOrdered.First(pl => pl.PlayerType != PlayerType.Keeper);
-                if (closestFieldPlayer.CanGetBall(pitch.Ball))
-                {
-                    new BallGrabber().DoAction(closestFieldPlayer, pitch);
-                    freePlayers.Remove(closestFieldPlayer);
-                }
+                AssignRole(Pitch.Ball.Owner, new Berserker(Pitch.Ball.Owner));
             }
             else
             {
-                //closest is keeper - assign him grab ball and substitute keeper to closest to goal field player
-                var closestKeeper = myOrdered.First();
-                if (closestKeeper.CanGetBall(pitch.Ball))
-                {
-                    new BallGrabber().DoAction(closestKeeper, pitch);
-                    freePlayers.Remove(closestKeeper);
-                }
+                var enemyClosest = Pitch.EnemyClosestToBall;
+                var enemyClosestDistToBall = double.PositiveInfinity;
 
-                var newKeeper = pitch.My.Players
-                                     .Where(pl => pl.PlayerType != PlayerType.Keeper)
-                                     .OrderBy(pl => pl.GetEstimatedDistance(Field.MyGoal))
-                                     .FirstOrDefault();
-                if (newKeeper != null)
+                if (enemyClosest != null)
+                    enemyClosestDistToBall = enemyClosest.GetEstimatedBallDistance() / 1.2;
+
+                var myOrdered = Pitch.My.Players
+                                     .OrderBy(pl => pl.GetEstimatedBallDistance());
+
+                var myOrderedClosest = myOrdered
+                    .Where(pl => pl.GetEstimatedBallDistance() < enemyClosestDistToBall)
+                    .ToList();
+
+                //grab the ball
+                if (myOrderedClosest.Any(pl => pl.PlayerType != PlayerType.Keeper))
                 {
-                    new DefensiveKeeper().DoAction(newKeeper, pitch);
-                    freePlayers.Remove(newKeeper);
+                    //closest is field player
+                    var closestFieldPlayer = myOrdered.First(pl => pl.PlayerType != PlayerType.Keeper);
+                    if (closestFieldPlayer.CanGetBall())
+                    {
+                        AssignRole(closestFieldPlayer, new BallGrabber(closestFieldPlayer));
+                        ClearExclusiveRole(closestFieldPlayer, typeof(BallGrabber));
+                    }
+
+                    var keeper = Pitch.MyKeeper;
+
+                    if (keeper != null)
+                    {
+                        AssignRole(keeper, new DefensiveKeeper(keeper));
+                        ClearExclusiveRole(keeper, typeof(DefensiveKeeper));
+                    }
+                }
+                else
+                {
+                    //closest is keeper - assign him grab ball and substitute keeper to closest to goal field player
+                    var closestKeeper = myOrdered.First();
+                    if (closestKeeper.CanGetBall())
+                    {
+                        AssignRole(closestKeeper, new BallGrabber(closestKeeper));
+                        ClearExclusiveRole(closestKeeper, typeof(BallGrabber));
+                    }
+
+                    var newKeeper = myOrdered.Skip(1).FirstOrDefault();
+                    if (newKeeper != null)
+                    {
+                        AssignRole(newKeeper, new DefensiveKeeper(newKeeper));
+                        ClearExclusiveRole(newKeeper, typeof(DefensiveKeeper));
+                    }
                 }
             }
 
-            freePlayers.ForEach(pl => new Berserker().DoAction(pl, pitch));
+            var unassigned = Pitch.My.Players
+                                  .Where(pl => !assignedRoles.ContainsKey(pl.PlayerType))
+                                  .ToList();
+
+            unassigned.ForEach(pl => AssignRole(pl, new Berserker(pl)));
         }
 
-        private static void AssignDefenceRoles(Pitch pitch)
+        private static void AssignDefenceRoles()
         {
             //todo not remove fallen players from this list, but add them extra distance to ball basing on timer
-            var freePlayers = pitch.My.Players.ToList();
-            var keeper = pitch.My.Players.FirstOrDefault(pl => pl.PlayerType == PlayerType.Keeper);
+            var keeper = Pitch.MyKeeper;
 
             if (keeper != null)
             {
-                new DefensiveKeeper().DoAction(keeper, pitch);
-                freePlayers.Remove(keeper);
+                AssignRole(keeper, new DefensiveKeeper(keeper));
+                ClearExclusiveRole(keeper, typeof(DefensiveKeeper));
             }
 
-            var closestToBall = pitch.My.Players
-                                    .OrderBy(pl => pl.GetEstimatedDistance(pitch.Ball))
-                                    .FirstOrDefault();
+            //todo if there is someone closer to my goal than keeper and enemy is closer than keeper - assign second keeper
+
+
+
+            var closestToBall = Pitch.MyFieldClosestToBall;
             if (closestToBall != null)
             {
-                new Stopper().DoAction(closestToBall, pitch);
-                freePlayers.Remove(closestToBall);
+                AssignRole(closestToBall, new Stopper(closestToBall));
+                ClearExclusiveRole(closestToBall, typeof(Stopper));
             }
 
-            var playersToMark = pitch.Enemy.Players
-                                     .Where(pl => pitch.Ball.Owner != pl)
-                                     .Where(pl => pl.Position.X < Field.Borders.Width*0.65);
 
-            foreach (var enemy in playersToMark)
+            var ballMarkArea = (Pitch.Ball.Position - Field.MyGoal.Position).X*1.2;
+            var markDistance = Math.Max(DistanceUtils.DefenceDistance, ballMarkArea);
+
+            var assignedDefenders = assignedRoles
+                .Where(pl => pl.Value.GetType() == typeof (Defender))
+                .Select(pl => new KeyValuePair<PlayerType, Defender>(pl.Key, (Defender)pl.Value))
+                .ToList();
+
+            var playersToMark = Pitch.Enemy.Players
+                                     .Where(pl => Pitch.Ball.Owner != pl)
+                                     .Where(pl => pl.Position.X < markDistance)
+                                     .ToList();
+
+            var nonMarkedPlayersToMark = playersToMark
+                .Where(enemy => assignedDefenders.All(def => def.Value.MarkTarget != enemy))
+                .ToList();
+
+            var defendersLostRole = assignedDefenders
+                .Where(def => playersToMark.All(enemy => enemy != def.Value.MarkTarget))
+                .ToList();
+
+            var freePlayers = Pitch.My.Players
+                .Where(pl => !assignedRoles.ContainsKey(pl.PlayerType))
+                .Concat(defendersLostRole.Select(def => def.Value.Self))
+                .ToList();
+
+            foreach (var enemy in nonMarkedPlayersToMark)
             {
                 if (!freePlayers.Any())
                     break;
 
                 var defender = freePlayers.First();
-                new Defender(enemy).DoAction(defender, pitch);
+                AssignRole(defender, new Defender(defender, enemy));
                 freePlayers.Remove(defender);
             }
 
@@ -113,22 +166,65 @@ namespace TeamRNA
             //assign roles to free players - strip ball and go forward
         }
 
-
-        private void SetAttackState(Pitch pitch)
+        private static void ClearExclusiveRole(Player exclusive, Type roleType)
         {
-            if (!inAttack && pitch.Ball.Owner != null && pitch.Ball.Owner.Team == pitch.My)
+            var roles = assignedRoles
+                .Where(pl => pl.Value.GetType() == roleType)
+                .ToList();
+            if (roles.Count() > 1)
+            {
+                var clearRoles = roles.Where(pl => pl.Key != exclusive.PlayerType);
+                foreach (var clear in clearRoles)
+                {
+                    assignedRoles.Remove(clear.Key);
+                    Pitch.Log("Clearing {0} from {1} as it is exclusive", clear.Value.GetType().Name, clear.Key);
+                }
+            }
+        }
+
+        private static void AssignRole(Player player, IRole role)
+        {
+            if (assignedRoles.ContainsKey(player.PlayerType))
+            {
+                if(assignedRoles[player.PlayerType].Equals(role))
+                    return;
+            }
+
+            assignedRoles[player.PlayerType] = role;
+            Pitch.Log("Assigned {0} to {1}", role.GetType().Name, player.PlayerType);
+        }
+
+
+        private static void SetAttackState()
+        {
+            if (!inAttack && Pitch.Ball.Owner != null && Pitch.Ball.Owner.Team == Pitch.My)
             {
                 inAttack = true;
+                Pitch.Log("Going to attack because owned ball, flushing roles");
+                assignedRoles.Clear();
             }
-            if (inAttack && pitch.Ball.Owner != null && pitch.Ball.Owner.Team == pitch.Enemy)
+            if (inAttack && Pitch.Ball.Owner != null && Pitch.Ball.Owner.Team == Pitch.Enemy)
             {
                 inAttack = false;
+                Pitch.Log("Going to defence because enemy owns ball, flushing roles");
+                assignedRoles.Clear();
             }
-            if (inAttack && pitch.Ball.Owner == null)
+            if (Pitch.Ball.Owner == null)
             {
-                var closest = pitch.ClosestToBall;
+                var closest = Pitch.ClosestToBall;
 
-                inAttack = closest.Team == pitch.My;
+                if (closest.Team == Pitch.My && !inAttack)
+                {
+                    inAttack = true;
+                    Pitch.Log("Going to attack because closest to ball, flushing roles");
+                    assignedRoles.Clear();
+                }
+                if(closest.Team != Pitch.My && inAttack)
+                {
+                    inAttack = false;
+                    Pitch.Log("Going to defence because not closest to ball, flushing roles");
+                    assignedRoles.Clear();
+                }
             }
         }
     }

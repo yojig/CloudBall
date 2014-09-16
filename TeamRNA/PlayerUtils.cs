@@ -4,17 +4,17 @@ namespace TeamRNA
 {
     public static class PlayerUtils
     {
-        public static bool CanGetBall(this Player player, Ball ball)
+        public static bool CanGetBall(this Player player)
         {
-            if (ball.Owner != null)
+            if (Pitch.Ball.Owner != null)
                 return false;
 
             return true;
         }
 
-        public static void GoForBall(this Player player, Ball ball)
+        public static void GoForBall(this Player player)
         {
-            player.ActionGo(ball.GetFuturePosition());
+            player.ActionGo(Pitch.Ball.GetFuturePosition());
         }
     }
 }

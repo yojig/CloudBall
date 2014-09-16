@@ -1,25 +1,51 @@
-﻿using Common;
+﻿using System;
+using Common;
+using TeamRNA.SpecialRoles;
 
 namespace TeamRNA.DefensiveRoles
 {
-    public class Defender : IRole
+    public class Defender : BaseRole, IEquatable<Defender>
     {
-        private readonly Player mark;
+        public readonly Player MarkTarget;
 
-        public Defender(Player mark)
+        public Defender(Player self, Player mark) : base(self)
         {
-            this.mark = mark;
+            this.MarkTarget = mark;
         }
 
-        public void DoAction(Player self, Pitch pitch)
+        public override void DoAction()
         {
-            if (self.CanPickUpBall(pitch.Ball))
+            if (Self.CanPickUpBall(Pitch.Ball))
             {
-                self.ActionPickUpBall();
+                Self.ActionPickUpBall();
                 return;
             }
 
-            self.ActionGo(mark.GetFuturePosition());
+            //calculate target pos
+            //if target is moving, then set point farther using diff in speed vectors
+            //if target is stale set point closer
+
+            Self.ActionGo(MarkTarget.GetFuturePosition());
+        }
+
+        public bool Equals(Defender other)
+        {
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return Equals(MarkTarget, other.MarkTarget);
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((Defender) obj);
+        }
+
+        public override int GetHashCode()
+        {
+            return (MarkTarget != null ? MarkTarget.GetHashCode() : 0);
         }
     }
 }

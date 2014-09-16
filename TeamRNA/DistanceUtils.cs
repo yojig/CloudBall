@@ -4,11 +4,11 @@ namespace TeamRNA
 {
     public static class DistanceUtils
     {
-        public static double GetEstimatedDistance(this Player pos1, Ball pos2)
+        public static double GetEstimatedBallDistance(this Player pos)
         {
             //straightly add velocity to get knowledge about movement of targets
-            var estimatedPos1 = pos1.Position + pos1.Velocity;
-            var estimatedPos2 = pos2.Position + pos2.Velocity;
+            var estimatedPos1 = pos.Position + pos.Velocity;
+            var estimatedPos2 = Pitch.Ball.Position + Pitch.Ball.Velocity;
 
             return estimatedPos1.GetDistanceTo(estimatedPos2);
         }
@@ -32,5 +32,8 @@ namespace TeamRNA
             var scaledVelocity = player.Velocity * player.Velocity.Length * 1.2;
             return player.Position + scaledVelocity;
         }
+
+        public static double SafeDistance = 25;
+        public static double DefenceDistance = Field.Borders.Width*0.65;
     }
 }

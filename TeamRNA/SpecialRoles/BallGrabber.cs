@@ -1,18 +1,42 @@
-﻿using Common;
+﻿using System;
+using Common;
 
 namespace TeamRNA.SpecialRoles
 {
-    public class BallGrabber : IRole
+    public class BallGrabber : BaseRole, IEquatable<BallGrabber>
     {
-        public void DoAction(Player self, Pitch pitch)
+        public BallGrabber(Player self) : base(self)
         {
-            if (self.CanPickUpBall(pitch.Ball))
+        }
+
+        public override void DoAction()
+        {
+            if (Self.CanPickUpBall(Pitch.Ball))
             {
-                self.ActionPickUpBall();
+                Self.ActionPickUpBall();
                 return;
             }
-            
-            self.GoForBall(pitch.Ball);
+
+            Self.GoForBall();
+        }
+
+        public bool Equals(BallGrabber other)
+        {
+            return true;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+
+            return Equals((BallGrabber) obj);
+        }
+
+        public override int GetHashCode()
+        {
+            return 0;
         }
     }
 }
