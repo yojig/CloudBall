@@ -17,6 +17,13 @@ namespace TeamRNA
             currentIter = 8;
         }
 
+        //shoot power table
+        //speed will equal to shoot power                   in best case
+        //                    previous in table shoot power in case of fumbled pass
+        //10 : 11.8
+        //9: 10.6
+        //8: 9.4
+        //7: 8.3
         public void Action(Team myTeam, Team enemyTeam, Ball ball, MatchInfo matchInfo)
         {
             var setup = myTeam.Players.First(pl => pl.PlayerType == PlayerType.CenterForward);
@@ -40,6 +47,7 @@ namespace TeamRNA
                 return;
             }
 
+            myTeam.DevMessage += string.Format("current power {0}, ball speed {1}", currentIter, ball.Velocity.Length);
 
             if (counter >= 9)
             {
