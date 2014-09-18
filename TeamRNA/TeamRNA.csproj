@@ -49,6 +49,7 @@
     <Compile Include="DistanceUtils.cs" />
     <Compile Include="PassingTestSquad.cs" />
     <Compile Include="PlayerUtils.cs" />
+    <Compile Include="RunningTestSquad.cs" />
     <Compile Include="SpecialRoles\BallGrabber.cs" />
     <Compile Include="DefensiveRoles\DefensiveKeeper.cs" />
     <Compile Include="DefensiveRoles\Stopper.cs" />
@@ -60,7 +61,11 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TestSquad.cs" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Content Include="readme.txt">
+      <LastGenOutput>readme1.feature.cs</LastGenOutput>
+    </Content>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
