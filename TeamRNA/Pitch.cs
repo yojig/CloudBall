@@ -10,6 +10,8 @@ namespace TeamRNA
         public static Ball Ball { get; private set; }
         public static MatchInfo Info { get; private set; }
 
+        public static GameStage Stage { get; set; }
+
         public static void Assign(Team my, Team enemy, Ball ball, MatchInfo info)
         {
             My = my;
@@ -27,15 +29,15 @@ namespace TeamRNA
             get
             {
                 var myClosest = My.Players
-                                  .OrderBy(pl => pl.GetEstimatedDistance(Ball))
+                                  .OrderBy(pl => pl.GetNextTurnDistance(Ball))
                                   .FirstOrDefault();
                 var enemyClosest = Enemy.Players
-                                  .OrderBy(pl => pl.GetEstimatedDistance(Ball))
+                                  .OrderBy(pl => pl.GetNextTurnDistance(Ball))
                                   .FirstOrDefault();
 
                 if (myClosest != null && enemyClosest != null)
                 {
-                    if (myClosest.GetEstimatedDistance(Ball) * 1.2 < enemyClosest.GetEstimatedDistance(Ball))
+                    if (myClosest.GetNextTurnDistance(Ball) * 1.2 < enemyClosest.GetNextTurnDistance(Ball))
                         return myClosest;
 
                     return enemyClosest;
@@ -57,7 +59,7 @@ namespace TeamRNA
             {
                 return My.Players
                     .Where(pl => pl.PlayerType != PlayerType.Keeper)
-                    .OrderBy(pl => pl.GetEstimatedDistance(Ball))
+                    .OrderBy(pl => pl.GetNextTurnDistance(Ball))
                     .FirstOrDefault();
 
             }
@@ -68,15 +70,16 @@ namespace TeamRNA
             get
             {
                 return Enemy.Players
-                    .OrderBy(pl => pl.GetEstimatedDistance(Ball))
+                    .OrderBy(pl => pl.GetNextTurnDistance(Ball))
                     .FirstOrDefault();
 
             }
         }
+
         public static void Log(string msg)
         {
             if (string.IsNullOrEmpty(My.DevMessage))
-                My.DevMessage += msg;
+                My.DevMessage = "[" + Pitch.Info.CurrentTimeStep + "] " + msg;
             else
                 My.DevMessage += "\r\n" + msg;
         }
@@ -93,6 +96,11 @@ namespace TeamRNA
             {
                 return My.Players.FirstOrDefault(pl => pl.PlayerType == PlayerType.Keeper);
             }
+        }
+
+        public static Player MyPlayer(PlayerType type)
+        {
+            return My.Players.FirstOrDefault(pl => pl.PlayerType == type);
         }
     }
 }

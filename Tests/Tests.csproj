@@ -4,14 +4,13 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{6E38E6A9-C148-4063-90BC-3E2F0036E4FF}</ProjectGuid>
+    <ProjectGuid>{B72BC187-1BE4-4A3D-A7ED-09F9E759455B}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>TeamRNA</RootNamespace>
-    <AssemblyName>TeamRNA</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <RootNamespace>Tests</RootNamespace>
+    <AssemblyName>Tests</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -31,9 +30,12 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Common, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="Common">
+      <HintPath>..\CloudBall\CloudBall\bin\x86\Debug\Common.dll</HintPath>
+    </Reference>
+    <Reference Include="nunit.framework, Version=2.6.2.12296, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\Libs\Common.dll</HintPath>
+      <HintPath>C:\Users\yojig\Documents\GitHub\BowlingKata\BowlingScorer.Test\bin\Debug\nunit.framework.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -44,29 +46,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AttackingRoles\Berserker.cs" />
-    <Compile Include="AttackingRoles\CenterForward.cs" />
-    <Compile Include="DefensiveRoles\Defender.cs" />
-    <Compile Include="DistanceUtils.cs" />
-    <Compile Include="NewSquad.cs" />
-    <Compile Include="PassingTestSquad.cs" />
-    <Compile Include="PlayerUtils.cs" />
-    <Compile Include="RunningTestSquad.cs" />
-    <Compile Include="SpecialRoles\BallGrabber.cs" />
-    <Compile Include="DefensiveRoles\DefensiveKeeper.cs" />
-    <Compile Include="DefensiveRoles\Stopper.cs" />
-    <Compile Include="SpecialRoles\BaseRole.cs" />
-    <Compile Include="TestRoles\GateStander.cs" />
-    <Compile Include="IRole.cs" />
-    <Compile Include="Pitch.cs" />
-    <Compile Include="Squad.cs" />
+    <Compile Include="VectorTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="TestSquad.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="readme.txt">
-      <LastGenOutput>readme1.feature.cs</LastGenOutput>
-    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TeamYojig", "TeamYojig\Team
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TeamRNA", "TeamRNA\TeamRNA.csproj", "{6E38E6A9-C148-4063-90BC-3E2F0036E4FF}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests", "Tests\Tests.csproj", "{B72BC187-1BE4-4A3D-A7ED-09F9E759455B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -79,6 +81,16 @@ Global
 		{6E38E6A9-C148-4063-90BC-3E2F0036E4FF}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{6E38E6A9-C148-4063-90BC-3E2F0036E4FF}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{6E38E6A9-C148-4063-90BC-3E2F0036E4FF}.Release|x86.ActiveCfg = Release|Any CPU
+		{B72BC187-1BE4-4A3D-A7ED-09F9E759455B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B72BC187-1BE4-4A3D-A7ED-09F9E759455B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B72BC187-1BE4-4A3D-A7ED-09F9E759455B}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{B72BC187-1BE4-4A3D-A7ED-09F9E759455B}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{B72BC187-1BE4-4A3D-A7ED-09F9E759455B}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{B72BC187-1BE4-4A3D-A7ED-09F9E759455B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B72BC187-1BE4-4A3D-A7ED-09F9E759455B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B72BC187-1BE4-4A3D-A7ED-09F9E759455B}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{B72BC187-1BE4-4A3D-A7ED-09F9E759455B}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{B72BC187-1BE4-4A3D-A7ED-09F9E759455B}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

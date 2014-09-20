@@ -14,10 +14,10 @@ namespace TeamRNA.AttackingRoles
         public override void DoAction()
         {
             var closest = Pitch.Enemy.Players
-                               .OrderBy(pl => pl.GetEstimatedDistance(Self))
+                               .OrderBy(pl => pl.GetNextTurnDistance(Self))
                                .FirstOrDefault();
 
-            if (closest != null && closest.GetEstimatedDistance(Self) > DistanceUtils.SafeDistance)
+            if (closest != null && closest.GetNextTurnDistance(Self) > DistanceUtils.SafeDistance)
             {
                 Self.ActionGo(Field.EnemyGoal);
                 return;
