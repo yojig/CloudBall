@@ -49,6 +49,12 @@
     <Compile Include="VectorTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\TeamRNA\TeamRNA.csproj">
+      <Project>{6E38E6A9-C148-4063-90BC-3E2F0036E4FF}</Project>
+      <Name>TeamRNA</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

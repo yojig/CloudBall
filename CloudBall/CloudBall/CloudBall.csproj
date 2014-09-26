@@ -116,8 +116,8 @@
     <Reference Include="System.Net">
       <Private>False</Private>
     </Reference>
-    <Reference Include="TeamIce03">
-      <HintPath>..\..\teams\TeamIce03.dll</HintPath>
+    <Reference Include="TeamIce12">
+      <HintPath>..\..\teams\TeamIce12.dll</HintPath>
     </Reference>
     <Reference Include="Wolkenhond1">
       <HintPath>..\..\teams\Wolkenhond1.dll</HintPath>

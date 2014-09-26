@@ -16,7 +16,7 @@ namespace TeamRNA
 
             var roles = Enumerable.Range(1, myTeam.Players.Count)
                                   .Zip(myTeam.Players, Tuple.Create)
-                                  .Select(p => new GateStander(p.Item2, new Vector(0, Field.MyGoal.Y + p.Item1*step)));
+                                  .Select(p => new GateStander(p.Item2.PlayerType, new Vector(0, Field.MyGoal.Y + p.Item1*step)));
                                   
             foreach (var role in roles)
                 role.DoAction();

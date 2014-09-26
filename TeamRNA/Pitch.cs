@@ -1,4 +1,6 @@
-﻿using Common;
+﻿using System;
+using System.Collections.Generic;
+using Common;
 using System.Linq;
 
 namespace TeamRNA
@@ -12,32 +14,46 @@ namespace TeamRNA
 
         public static GameStage Stage { get; set; }
 
+        private static Dictionary<int, Tuple<Vector, Vector>> ballFuturePosition;
+        public static Vector BallFuturePosition(int turn)
+        {
+            while (!ballFuturePosition.ContainsKey(turn))
+                DistanceUtils.AddBallFuturePos(ref ballFuturePosition);
+
+            return ballFuturePosition[turn].Item1;
+        }
+
         public static void Assign(Team my, Team enemy, Ball ball, MatchInfo info)
         {
             My = my;
             Enemy = enemy;
             Ball = ball;
             Info = info;
+
+            LogInfoEnabled = true;
+
+            ballFuturePosition = DistanceUtils.BuildBallFuturePosition(50);
         }
 
         private Pitch()
-        {
-        }
+        {}
 
         public static Player ClosestToBall
         {
             get
             {
                 var myClosest = My.Players
-                                  .OrderBy(pl => pl.GetNextTurnDistance(Ball))
-                                  .FirstOrDefault();
+                    .Where(pl => pl.FallenTimer > 0)
+                    .OrderBy(pl => pl.TurnsToGetBall())
+                    .FirstOrDefault();
                 var enemyClosest = Enemy.Players
-                                  .OrderBy(pl => pl.GetNextTurnDistance(Ball))
-                                  .FirstOrDefault();
+                    .Where(pl => pl.FallenTimer > 0)
+                    .OrderBy(pl => pl.TurnsToGetBall())
+                    .FirstOrDefault();
 
                 if (myClosest != null && enemyClosest != null)
                 {
-                    if (myClosest.GetNextTurnDistance(Ball) * 1.2 < enemyClosest.GetNextTurnDistance(Ball))
+                    if (myClosest.TurnsToGetBall() * 1.01 < enemyClosest.TurnsToGetBall())
                         return myClosest;
 
                     return enemyClosest;
@@ -59,9 +75,8 @@ namespace TeamRNA
             {
                 return My.Players
                     .Where(pl => pl.PlayerType != PlayerType.Keeper)
-                    .OrderBy(pl => pl.GetNextTurnDistance(Ball))
-                    .FirstOrDefault();
-
+                    .OrderBy(pl => pl.TurnsToGetBall())
+                    .FirstOrDefault(); 
             }
         }
 
@@ -70,9 +85,8 @@ namespace TeamRNA
             get
             {
                 return Enemy.Players
-                    .OrderBy(pl => pl.GetNextTurnDistance(Ball))
+                    .OrderBy(pl => pl.TurnsToGetBall())
                     .FirstOrDefault();
-
             }
         }
 
@@ -84,6 +98,7 @@ namespace TeamRNA
                 My.DevMessage += "\r\n" + msg;
         }
 
+        public static bool LogInfoEnabled;
         public static void Log(string format, params object[] args)
         {
             Log(string.Format(format, args));

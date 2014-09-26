@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using Common;
+﻿using Common;
 
 namespace TeamRNA.SpecialRoles
 {
@@ -8,16 +7,16 @@ namespace TeamRNA.SpecialRoles
         public PlayerType Type { get; set; }
         public Player Self { get { return Pitch.MyPlayer(Type); } }
 
-                    public abstract void DoAction();
+        public abstract void DoAction();
 
-        protected BaseRole(Player self)
+        protected BaseRole(PlayerType self)
         {
-            Type = self.PlayerType;
+            Type = self;
         }
 
         public bool BallOwner
         {
-            get { return Pitch.Ball.Owner.Team == Pitch.My && Pitch.Ball.Owner.PlayerType == Type; }
+            get { return Pitch.Ball.Owner != null && Pitch.Ball.Owner.Team == Pitch.My && Pitch.Ball.Owner.PlayerType == Type; }
         }
 
         public Player ClosestEnemy
@@ -25,5 +24,11 @@ namespace TeamRNA.SpecialRoles
             get { return Self.ClosestEnemy(); }
         }
 
+
+        public void Info(string format, params string[] p)
+        {
+            if (Pitch.LogInfoEnabled)
+                Pitch.Log("[" + Type + "] " + format, p);
+        }
     }
 }

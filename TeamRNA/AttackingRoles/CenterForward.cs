@@ -8,7 +8,7 @@ namespace TeamRNA.AttackingRoles
     {
         public float PickedUpBallOnTurn = -1;
 
-        public CenterForward(Player self)
+        public CenterForward(PlayerType self)
             : base(self)
         {
         }
@@ -32,10 +32,26 @@ namespace TeamRNA.AttackingRoles
                 {
                     var enemyPlayersCanTackle = Pitch.Enemy.Players
                         .Where(pl => pl.TackleTimer == 0)
-                        .Where(pl => pl.GetNextTurnDistance(Self) > Constants.PlayerMaxTackleDistance);
+                        .Where(pl => pl.GetDistanceTo(Self) < Constants.PlayerMaxTackleDistance + 5);
                     if (!enemyPlayersCanTackle.Any())
                         isSafe = true;
                 }
+
+                if (isSafe)
+                {
+                    Self.ActionGo(Field.EnemyGoal);
+                }
+                else
+                {
+                    var myPlayer = Pitch.My.Players
+                        .Where(pl => pl.PlayerType != Type)
+                        .OrderBy(pl => pl.GetDistanceTo(Self))
+                        .First();
+                    var scaledPosition = myPlayer.Position + myPlayer.Velocity*30;
+                    Self.ActionShoot(scaledPosition, (float)(Constants.PlayerMaxShootStr * 0.7));
+                }
+
+                return;
             }
             else
             {
@@ -48,14 +64,14 @@ namespace TeamRNA.AttackingRoles
                 Self.CanTackle(ClosestEnemy))
             {
                 Self.ActionTackle(ClosestEnemy);
-                Pitch.Log("{0} tackling enemy", Type);
+                Info("tackling enemy");
                 return;
             }
             
             if (Self.CanPickUpBall(Pitch.Ball))
             {
                 Self.ActionPickUpBall();
-                Pitch.Log("{0} picking up the ball", Type);
+                Info("picking up the ball");
                 return;
             }
 

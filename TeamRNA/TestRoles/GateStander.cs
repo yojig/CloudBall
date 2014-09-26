@@ -8,7 +8,8 @@ namespace TeamRNA.TestRoles
     {
         private readonly IPosition position;
 
-        public GateStander(Player self, IPosition position):base(self)
+        public GateStander(PlayerType self, IPosition position)
+            : base(self)
         {
             this.position = position;
         }

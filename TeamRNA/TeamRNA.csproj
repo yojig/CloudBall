@@ -44,22 +44,19 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AttackingRoles\Berserker.cs" />
     <Compile Include="AttackingRoles\CenterForward.cs" />
     <Compile Include="DefensiveRoles\Defender.cs" />
     <Compile Include="DistanceUtils.cs" />
-    <Compile Include="NewSquad.cs" />
+    <Compile Include="GameStage.cs" />
     <Compile Include="PassingTestSquad.cs" />
     <Compile Include="PlayerUtils.cs" />
     <Compile Include="RunningTestSquad.cs" />
-    <Compile Include="SpecialRoles\BallGrabber.cs" />
     <Compile Include="DefensiveRoles\DefensiveKeeper.cs" />
-    <Compile Include="DefensiveRoles\Stopper.cs" />
     <Compile Include="SpecialRoles\BaseRole.cs" />
+    <Compile Include="Squad.cs" />
     <Compile Include="TestRoles\GateStander.cs" />
     <Compile Include="IRole.cs" />
     <Compile Include="Pitch.cs" />
-    <Compile Include="Squad.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TestSquad.cs" />
   </ItemGroup>

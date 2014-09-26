@@ -1,28 +1,27 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using Common;
 
 namespace TeamRNA
 {
     public static class DistanceUtils
     {
-        public static double GetEstimatedBallDistance(this Player pos)
-        {
-            //straightly add velocity to get knowledge about movement of targets
-            var estimatedPos1 = pos.Position + pos.Velocity;
-            var estimatedPos2 = Pitch.Ball.Position + Pitch.Ball.Velocity;
+        //public static double GetEstimatedBallDistance(this Player pos)
+        //{
+        //    //straightly add velocity to get knowledge about movement of targets
+        //    var estimatedPos1 = pos.Position + pos.Velocity;
+        //    var estimatedPos2 = Pitch.Ball.Position + Pitch.Ball.Velocity;
 
-            return estimatedPos1.GetDistanceTo(estimatedPos2);
-        }
+        //    return estimatedPos1.GetDistanceTo(estimatedPos2);
+        //}
 
-        public static double GetNextTurnDistance(this Player pos1, IPosition pos2)
-        {
-            //straightly add velocity to get knowledge about movement of targets
-            var estimatedPos1 = pos1.Position + pos1.Velocity;
+        //public static double GetNextTurnDistance(this Player pos1, IPosition pos2)
+        //{
+        //    //straightly add velocity to get knowledge about movement of targets
+        //    var estimatedPos1 = pos1.Position + pos1.Velocity;
 
-            return estimatedPos1.GetDistanceTo(pos2);
-        }
+        //    return estimatedPos1.GetDistanceTo(pos2);
+        //}
 
         public static IPosition GetFuturePosition(this Ball ball)
         {
@@ -44,13 +43,13 @@ namespace TeamRNA
             return self.GetClosest(Pitch.Enemy);
         }
         
-        public static bool BallInPlayerDirection(this Player pl)
-        {
-            var sub = (pl.Position - Pitch.Ball.Position);
-            var dir = Pitch.Ball.Velocity;
+        //public static bool BallInPlayerDirection(this Player pl)
+        //{
+        //    var sub = (pl.Position - Pitch.Ball.Position);
+        //    var dir = Pitch.Ball.Velocity;
 
-            return (sub.Unit() - dir.Unit()).Length < 1.414213;
-        }
+        //    return (sub.Unit() - dir.Unit()).Length < 1.414213;
+        //}
 
         public static Vector GetPlayerWithBallIntersection(this Player pl)
         {
@@ -78,29 +77,43 @@ namespace TeamRNA
 
         public static int TurnsToGetBall(this Player pl)
         {
-            //if ball is moving from me calculate next player position towards ball
-            //if ball is moving to me calc position to normal to know if we can get ball
-            //if we can do it - calc towards ball pos in turn when we are reaching normal
-            //if not - calc towards ball pos in turn when we are reaching normal
+            var playerDistScale = (pl.Position - Pitch.Ball.Position).Length/3;
+            var scaledVelocity = Pitch.Ball.Velocity * playerDistScale;
+            var ballPos = Pitch.Ball.Position + scaledVelocity;
 
-            return 0;
+            float currentDistance;
+            var cnt = 0;
+            do
+            {
+                var turnsToPoint = pl.TurnsToGetToPoint(ballPos, Constants.BallMaxPickUpDistance);
+                var nextIterPos = Pitch.BallFuturePosition(turnsToPoint);
+                currentDistance = ballPos.GetDistanceTo(nextIterPos);
+                ballPos = (ballPos + nextIterPos) / 2;
+                ++cnt;
+                if (cnt > 15)
+                    return int.MaxValue;
+            } while (currentDistance > Constants.BallMaxPickUpDistance);
+
+            return pl.TurnsToGetToPoint(ballPos, Constants.BallMaxPickUpDistance);
         }
 
-        private static int TurnsToGetToPoint(this Player pl, Vector point)
+        private static int TurnsToGetToPoint(this Player pl, Vector point, float constDistance)
         {
             var position = pl.Position;
             var velocity = pl.Velocity;
+            var constFactor = Constants.PlayerAccelerationFactor*Constants.PlayerMaxVelocity*
+                                Constants.PlayerSlowDownFactor;
 
             var turn = 0;
 
-            while ((point - position).Length < velocity.Length)
+            while ((point - position).Length > velocity.Length + constDistance)
             {
-                var direction = (position - point);
+                var direction = (point - position);
                 direction.Normalize();
 
-                velocity = (velocity + direction*Constants.PlayerAccelerationFactor*Constants.PlayerMaxVelocity)*
-                           Constants.PlayerSlowDownFactor;
+                velocity = velocity*Constants.PlayerSlowDownFactor + direction*constFactor;
                 position = position + velocity;
+                ++turn;
             }
 
             return turn;
@@ -117,15 +130,15 @@ namespace TeamRNA
             return result;
         }
 
-        private static void AddBallFuturePos(ref Dictionary<int, Tuple<Vector, Vector>> result)
+        public static void AddBallFuturePos(ref Dictionary<int, Tuple<Vector, Vector>> result)
         {
-            var last = result.Last();
+            var last = result[result.Count - 1];
 
-            var velocity = last.Value.Item2 * Constants.BallSlowDownFactor;
-            var position = last.Value.Item1 + velocity;
+            var velocity = last.Item2 * Constants.BallSlowDownFactor;
+            var position = last.Item1 + velocity;
             //todo: if pos is in border then recalc next position and turn velocity vector
 
-            result[last.Key + 1] = Tuple.Create(position, velocity);
+            result[result.Count] = Tuple.Create(position, velocity);
         }
     }
 }

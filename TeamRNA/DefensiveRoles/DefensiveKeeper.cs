@@ -6,7 +6,8 @@ namespace TeamRNA.DefensiveRoles
 {
     public class DefensiveKeeper : BaseRole, IEquatable<DefensiveKeeper>
     {
-        public DefensiveKeeper(Player self) : base(self)
+        public DefensiveKeeper(PlayerType self)
+            : base(self)
         {
         }
 
