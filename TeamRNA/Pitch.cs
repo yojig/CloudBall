@@ -33,39 +33,44 @@ namespace TeamRNA
             LogInfoEnabled = true;
 
             ballFuturePosition = DistanceUtils.BuildBallFuturePosition(50);
+            closest = null;
         }
 
         private Pitch()
         {}
 
+        private static Player closest;
         public static Player ClosestToBall
         {
             get
             {
-                var myClosest = My.Players
-                    .Where(pl => pl.FallenTimer > 0)
-                    .OrderBy(pl => pl.TurnsToGetBall())
-                    .FirstOrDefault();
-                var enemyClosest = Enemy.Players
-                    .Where(pl => pl.FallenTimer > 0)
-                    .OrderBy(pl => pl.TurnsToGetBall())
-                    .FirstOrDefault();
-
-                if (myClosest != null && enemyClosest != null)
+                if (closest == null)
                 {
-                    if (myClosest.TurnsToGetBall() * 1.01 < enemyClosest.TurnsToGetBall())
-                        return myClosest;
+                    var myClosest = My.Players
+                                      .Where(pl => pl.FallenTimer > 0)
+                                      .OrderBy(pl => pl.TurnsToGetBall())
+                                      .FirstOrDefault();
+                    var enemyClosest = Enemy.Players
+                                            .Where(pl => pl.FallenTimer > 0)
+                                            .OrderBy(pl => pl.TurnsToGetBall())
+                                            .FirstOrDefault();
 
-                    return enemyClosest;
+                    if (myClosest != null && enemyClosest != null)
+                    {
+                        if (myClosest.TurnsToGetBall()*1.01 < enemyClosest.TurnsToGetBall())
+                            return myClosest;
+
+                        closest = enemyClosest;
+                    }
+
+                    if (myClosest != null)
+                        closest = myClosest;
+
+                    if (enemyClosest != null)
+                        closest = enemyClosest;
                 }
 
-                if (myClosest != null)
-                    return myClosest;
-
-                if (enemyClosest != null)
-                    return enemyClosest;
-
-                return null;
+                return closest;
             }
         }
 

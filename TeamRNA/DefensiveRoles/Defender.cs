@@ -17,6 +17,8 @@ namespace TeamRNA.DefensiveRoles
 
         public float PickedUpBallOnTurn = -1;
 
+        private IPosition attackTarget = null;
+
         public override void DoAction()
         {
             if (Self.FallenTimer > 0)
@@ -36,6 +38,37 @@ namespace TeamRNA.DefensiveRoles
 
             PickedUpBallOnTurn = -1;
 
+            if (Pitch.Stage == GameStage.Attack)
+            {
+                if (attackTarget == null)
+                {
+                    var angle = new Random().Next(0, 30);
+                    var direction = new Random().Next(0, 2) == 0 ? 1 : -1;
+                    var target = Self.Position - Field.EnemyGoal.Center;
+                    target = target/target.Length*Field.EnemyGoal.Height*1.3;
+                    target.Rotate((float) (direction * Math.PI / 180 * angle));
+
+                    attackTarget = Field.EnemyGoal.Center + target;
+                }
+
+                Self.ActionGo(attackTarget);
+                return;
+            }
+
+            if (Pitch.Stage == GameStage.GetTheBall)
+            {
+               var closest = Pitch.ClosestToBall;
+               if (closest != null && closest.PlayerType == Type)
+               {
+                   var turns = Self.TurnsToGetBall();
+                   Self.ActionGo(Pitch.BallFuturePosition(turns));
+                   return;
+               }
+            }
+
+            if(attackTarget != null)
+                attackTarget = null;
+
             WithoutBall();
         }
 
@@ -52,7 +85,6 @@ namespace TeamRNA.DefensiveRoles
 
             if (!isSafe)
             {
-                
                 if (!enemyPlayersCanTackle.Any())
                     isSafe = true;
             }
@@ -68,7 +100,7 @@ namespace TeamRNA.DefensiveRoles
                                                   .Where(pl => pl.Position.X > Self.Position.X)
                                                   .ToList();
 
-                if (enemiesInGoalDirection.Count == 0 && Self.Position.GetDistanceTo(Field.EnemyGoal) < Field.EnemyGoal.Height * 3)
+                if (enemiesInGoalDirection.Count == 0 && Self.Position.GetDistanceTo(Field.EnemyGoal) < Field.EnemyGoal.Height * 2)
                 {
                     Info("shooting empty goal");
                     Self.ActionShoot(Field.EnemyGoal, (float)(Constants.PlayerMaxShootStr * 0.85));

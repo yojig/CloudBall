@@ -5,6 +5,7 @@
         Reset,
         Start,
         Defence,
-        Attack
+        Attack,
+        GetTheBall
     }
 }

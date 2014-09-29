@@ -54,13 +54,20 @@ namespace TeamRNA
                 //loose ball or pass
                 var closest = Pitch.ClosestToBall;
 
-                if (closest == null)
+                if (closest == null && Pitch.Stage != GameStage.GetTheBall)
+                {
+                    Pitch.Log("Going to get the ball - nobody near");
+                    Pitch.Stage = GameStage.GetTheBall; 
+                    return;
+                }
+
+                if(closest == null)
                     return;
 
-                if (closest.Team == Pitch.My && Pitch.Stage != GameStage.Attack)
+                if (closest.Team == Pitch.My && Pitch.Stage != GameStage.GetTheBall)
                 {
-                    Pitch.Stage = GameStage.Attack;
-                    Pitch.Log("Going to attack because closest to ball");
+                    Pitch.Stage = GameStage.GetTheBall;
+                    Pitch.Log("Going to get the ball");
                 }
                 if (closest.Team != Pitch.My && Pitch.Stage != GameStage.Defence)
                 {
