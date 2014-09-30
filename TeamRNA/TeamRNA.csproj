@@ -44,6 +44,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="4review\EnemyLocator.cs" />
+    <Compile Include="4review\GoalKeeper.cs" />
+    <Compile Include="4review\Line.cs" />
+    <Compile Include="4review\MadForward.cs" />
+    <Compile Include="4review\MadGuys.cs" />
     <Compile Include="AttackingRoles\CenterForward.cs" />
     <Compile Include="DefensiveRoles\Defender.cs" />
     <Compile Include="DistanceUtils.cs" />
