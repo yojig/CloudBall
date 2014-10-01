@@ -14,41 +14,45 @@ namespace TeamRNA.ForReview
 
         public override void DoAction()
         {
-            var player = Self;
             var myTeam = Pitch.My;
             var enemyTeam = Pitch.Enemy;
             var ball = Pitch.Ball;
-            if (ball.Owner == player)
+
+            if (BallOwner)
             {
-                var partner = player.GetClosestUncovered(myTeam, enemyTeam);
+                var partner = Self.GetClosestUncovered(myTeam, enemyTeam);
                 if (partner != null)
                 {
-                    var power = player.GetDistanceTo(partner) / 10;
-                    player.ActionShoot(partner, power);
+                    var power = Self.GetDistanceTo(partner) / 10;
+                    Self.ActionShoot(partner, power);
                     return;
                 }
                 else
                 {
                     // todo: shoot just to enemy side
-                    player.ActionShootGoal();
+                    Self.ActionShootGoal();
                     return;
                 }
             }
-            if (player.GetDistanceTo(ball) < 50
-                && player.CanPickUpBall(ball))
+
+            if (Self.CanPickUpBall(ball))
             {
-                player.ActionPickUpBall();
+                Self.ActionPickUpBall();
                 return;
             }
-            if (ball.GetClosest(myTeam) == player
-                && ball.GetClosest(enemyTeam).GetDistanceTo(ball) < player.GetDistanceTo(ball)
+
+            
+            if (Pitch.ClosestToBall != null 
+                && Pitch.ClosestToBall.PlayerType == Type 
+                && Pitch.ClosestToBall.Team == Pitch.My
                 && ball.GetDistanceTo(Field.MyGoal.Center) < 400)
             {
-                player.ActionGo(ball.Position);
+                Self.ActionGo(ball.Position);
                 return;
             }
-            var dir = ChooseDirection(player, ball);
-            player.ActionGo(dir);
+
+            var dir = ChooseDirection(Self, ball);
+            Self.ActionGo(dir);
         }
 
         public static Vector ChooseDirection(Player player, Ball ball)

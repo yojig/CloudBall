@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Common;
 using TeamRNA.DefensiveRoles;
+using TeamRNA.ForReview;
 
 namespace TeamRNA
 {
@@ -15,7 +16,7 @@ namespace TeamRNA
             assignedRoles.Add(new Defender(PlayerType.RightForward, PlayerType.LeftForward));
             assignedRoles.Add(new Defender(PlayerType.LeftDefender, PlayerType.RightDefender));
             assignedRoles.Add(new Defender(PlayerType.RightDefender, PlayerType.LeftDefender));
-            assignedRoles.Add(new DefensiveKeeper(PlayerType.Keeper));
+            assignedRoles.Add(new GoalKeeper(PlayerType.Keeper));
             
         }
 
